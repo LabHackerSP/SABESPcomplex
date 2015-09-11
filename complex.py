@@ -12,6 +12,7 @@ if __name__ == '__main__':
   pygame.display.init()
   screen = pygame.display.set_mode((640, 480), pygame.RESIZABLE)
   font = pygame.font.SysFont("monospace", 16)
+  pygame.key.set_repeat(200,50)
   terminal = cli.Cli()
 
   sys.stdout = fp = pygtext.pygfile(font)
@@ -25,7 +26,7 @@ if __name__ == '__main__':
         break
       elif event.type == KEYDOWN:
         if event.key == K_RETURN:
-          fp.buff += [fp.value, '\n']
+          fp.buff += [fp.prompt + fp.value, '\n']
           terminal.onecmd(fp.value)
           fp.value = ''
     fp.updateinput(events)

@@ -5,8 +5,6 @@ import cmd
 import argparse
 
 class Cli(cmd.Cmd):
-  intro = "Welcome to prompt"
-  prompt = ">> "
   undoc_header = None
   doc_header = "Comandos disponíveis"
   

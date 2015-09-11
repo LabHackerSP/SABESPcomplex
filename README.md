@@ -2,6 +2,12 @@
 
 Jogo inspirado por MU Complex para aprendizado da linha de comando de sistemas UNIX.
 
+## Dependências
+
+Este repositório requere as seguintes dependências não inclusas:
+
+* pygame
+
 ## Código usado
 
 Este repósitório contém código derivado de:
