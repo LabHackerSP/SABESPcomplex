@@ -7,18 +7,18 @@ import pygame, string
 #pygfile for pygame printing
 #source: https://www.cs.unc.edu/~gb/blog/2007/11/16/python-file-like-object-for-use-with-print-in-pygame/
 class pygfile(object):
-    def __init__(self, font=None):
+    def __init__(self, font=None, prompt='> ', cursor='_', maxlength=-1):
         if font is None:
             font = pygame.font.SysFont('monospace', 10)
         self.font = font
         self.buff = []
-        self.maxlength = -1
         self.value = ''
         self.shift = False
         self.ctrl = False
-        self.restricted = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!"#$%&\\\'()*+,-./:;<=>?@[\]^_`{|}~'
-        self.prompt = '> '
-        self.cursor = '_'
+        #self.restricted = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!"#$%&\\\'()*+,-./:;<=>?@[\]^_`{|}~'
+        self.maxlength = maxlength
+        self.prompt = prompt
+        self.cursor = cursor
     
     def write(self, text):
         self.buff.append(text)

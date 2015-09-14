@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import cmd
+from cmd import Cmd
 import argparse
+import pygame
 
-class Cli(cmd.Cmd):
+class Cli(Cmd):
   undoc_header = None
   doc_header = "Comandos disponíveis"
   
@@ -13,13 +14,16 @@ class Cli(cmd.Cmd):
 
   def do_EOF(self, line):
     return True
+  
+  def do_exit(self, line):
+    pygame.event.post(pygame.event.Event(pygame.QUIT))
     
   def emptyline(self):
     pass
 
   def print_topics(self, header, cmds, cmdlen, maxcol):
     if header is not None:
-      cmd.Cmd.print_topics(self, header, cmds, cmdlen, maxcol)
+      Cmd.print_topics(self, header, cmds, cmdlen, maxcol)
 
 '''
 if __name__ == '__main__':
