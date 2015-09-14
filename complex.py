@@ -3,7 +3,7 @@
 
 from pygame.locals import *
 import pygame, string
-import sys, codecs  
+import sys, os
 # local
 import cli, pygtext
 
@@ -19,8 +19,8 @@ def main(argv):
   terminal = cli.Cli()
 
   sys.stdout = fp = pygtext.pygfile(font)
-  #sys.stdout = codecs.getwriter('utf8')(sys.stdout)
   terminal.stdout  = sys.stdout
+  fp.prompt = os.getcwd() + '> '
 
   cursor_state = True
   pygame.time.set_timer(USEREVENT_BLINK_CURSOR, 500)

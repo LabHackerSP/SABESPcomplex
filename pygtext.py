@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pygame.locals import *
-import pygame, string, sys
+import pygame, string
 
 #pygfile for pygame printing
 #source: https://www.cs.unc.edu/~gb/blog/2007/11/16/python-file-like-object-for-use-with-print-in-pygame/
@@ -33,7 +33,7 @@ class pygfile(object):
     n0 = 0
     n1 = len(text)
     while True:
-      ng = (n0 + n1) / 2
+      ng = (n0 + n1) // 2
       if ng == n0:
         break
       w,h = self.font.size(text[0:ng])
@@ -78,11 +78,11 @@ class pygfile(object):
     '''Update the input based on passed events'''
     for event in events:
       if event.type == KEYUP:
-        if event.key == K_LSHIFT or event.key == K_RSHIFT: self.shifted = False
+        if event.key == K_LSHIFT or event.key == K_RSHIFT: self.shift = False
         if event.key == K_LCTRL or event.key == K_RCTRL: self.ctrl = False
       if event.type == KEYDOWN:
         if event.key == K_BACKSPACE: self.value = self.value[:-1]
-        elif event.key == K_LSHIFT or event.key == K_RSHIFT: self.shifted = True
+        elif event.key == K_LSHIFT or event.key == K_RSHIFT: self.shift = True
         elif event.key == K_LCTRL or event.key == K_RCTRL: self.ctrl = True
         if self.ctrl:
           # ctrl-c clears input line
@@ -90,7 +90,15 @@ class pygfile(object):
         elif not self.shift:
           if event.key in range(32,126): self.value += chr(event.key)
         elif self.shift:
-          if event.key in range(32,126): self.value += chr(event.key).upper()
+          if event.key in range(32,126): self.value += shifted(chr(event.key))
 
     if len(self.value) > self.maxlength and self.maxlength >= 0: self.value = self.value[:-1]
 
+def shifted(string):
+  inkey   = '1234567890-=/;\'[]\\'
+  shifted = '!@#$%¨&*()_+?:\"{}|'
+  table = string.maketrans(inkey, shifted)
+  if string in inkey:
+    return string.translate(table)
+  else:
+    return string.upper()
