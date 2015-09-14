@@ -94,11 +94,12 @@ class pygfile(object):
 
     if len(self.value) > self.maxlength and self.maxlength >= 0: self.value = self.value[:-1]
 
-def shifted(string):
-  inkey   = '1234567890-=/;\'[]\\'
-  shifted = '!@#$%¨&*()_+?:\"{}|'
+def shifted(char):
+  inkey   = '123457890-=/;\'[]\\'
+  shifted = '!@#$%&*()_+?:\"{}|'
   table = string.maketrans(inkey, shifted)
-  if string in inkey:
-    return string.translate(table)
+  #if string in inkey:
+  if inkey.find(char) != -1:
+    return char.translate(table)
   else:
-    return string.upper()
+    return char.upper()
