@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from cmd import Cmd
@@ -7,13 +6,11 @@ import pygame
 
 class Cli(Cmd):
   undoc_header = None
-  doc_header = "Comandos disponíveis"
+  #doc_header = u'Comandos disponíveis'.encode('iso8859-1')
+  doc_header = 'Comandos disponíveis'
   
   def do_hello(self, line):
-    print "hi!"
-
-  def do_EOF(self, line):
-    return True
+    print('hi!')
   
   def do_exit(self, line):
     pygame.event.post(pygame.event.Event(pygame.QUIT))

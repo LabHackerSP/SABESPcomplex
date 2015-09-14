@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from pygame.locals import *
 import pygame, string
-import sys
+import sys, codecs  
 # local
 import cli, pygtext
 
@@ -14,16 +14,16 @@ def main(argv):
   pygame.init()
   pygame.display.init()
   screen = pygame.display.set_mode((640, 480), pygame.RESIZABLE)
-  font = pygame.font.SysFont("monospace", 16)
+  font = pygame.font.SysFont('monospace', 12)
   pygame.key.set_repeat(200,50)
   terminal = cli.Cli()
 
   sys.stdout = fp = pygtext.pygfile(font)
+  #sys.stdout = codecs.getwriter('utf8')(sys.stdout)
   terminal.stdout  = sys.stdout
 
   cursor_state = True
   pygame.time.set_timer(USEREVENT_BLINK_CURSOR, 500)
-      
   while True:
     # watch for events
     events = pygame.event.get()
