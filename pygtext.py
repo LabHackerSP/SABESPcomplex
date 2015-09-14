@@ -19,6 +19,13 @@ class pygfile(object):
     self.prompt = prompt
     self.cursor = cursor
     
+    inkey   = '123457890-=/;\'[]\\'
+    shifted = '!@#$%&*()_+?:\"{}|'
+    try:
+      self.table = str.maketrans(inkey,shifted)
+    except:
+      self.table = string.maketrans(inkey,shifted)
+    
   def write(self, text):
     self.buff.append(text)
     
@@ -90,16 +97,9 @@ class pygfile(object):
         elif not self.shift:
           if event.key in range(32,126): self.value += chr(event.key)
         elif self.shift:
-          if event.key in range(32,126): self.value += shifted(chr(event.key))
+          if event.key in range(32,126): self.value += shifted(chr(event.key), self.table)
 
     if len(self.value) > self.maxlength and self.maxlength >= 0: self.value = self.value[:-1]
 
-def shifted(char):
-  inkey   = '123457890-=/;\'[]\\'
-  shifted = '!@#$%&*()_+?:\"{}|'
-  table = string.maketrans(inkey, shifted)
-  #if string in inkey:
-  if inkey.find(char) != -1:
-    return char.translate(table)
-  else:
-    return char.upper()
+def shifted(char, table):
+    return char.translate(table).upper()
