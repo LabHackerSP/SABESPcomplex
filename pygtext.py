@@ -5,8 +5,8 @@ import pygame, string
 
 #pygfile for pygame printing
 #source: https://www.cs.unc.edu/~gb/blog/2007/11/16/python-file-like-object-for-use-with-print-in-pygame/
-class pygfile(object):
-  def __init__(self, font=None, prompt='> ', cursor='_', maxlength=-1):
+class Pygfile(object):
+  def __init__(self, font=None, prompt='> ', cursor='_', maxlength=-1, prompt_enable=True):
     if font is None:
       font = pygame.font.SysFont('monospace', 10)
     self.font = font
@@ -16,6 +16,7 @@ class pygfile(object):
     self.ctrl = False
     #self.restricted = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!"#$%&\\\'()*+,-./:;<=>?@[\]^_`{|}~'
     self.maxlength = maxlength
+    self.prompt_enable = prompt_enable
     self.prompt = prompt
     self.cursor = cursor
     
@@ -56,7 +57,8 @@ class pygfile(object):
     # get the size of the target surface
     w,h = surf.get_size()
     # join all the writes together into one string
-    text = ''.join(self.buff) + self.prompt + self.value + self.cursor
+    text = ''.join(self.buff)
+    if self.prompt_enable: text = text + self.prompt + self.value + self.cursor
     # and split it into lines
     lines = text.split('\n')
     # bust up any long lines into pieces that fit

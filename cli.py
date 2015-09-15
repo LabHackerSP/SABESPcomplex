@@ -8,6 +8,10 @@ class Cli(Cmd):
   undoc_header = None
   doc_header = 'Comandos disponíveis'
   
+  def __init__(self, parent=None):
+    self.parent = parent
+    Cmd.__init__(self)
+    
   def do_hello(self, line):
     print('hi!\ntest')
   
@@ -16,6 +20,9 @@ class Cli(Cmd):
     
   def emptyline(self):
     pass
+    
+  def do_slowtext(self, line):
+    self.parent.slowtext(line + '\n')
   
   def do_cd(self,line):
     try:
