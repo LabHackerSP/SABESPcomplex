@@ -22,7 +22,9 @@ class Game:
     sys.stdout = self.stdout = pygtext.Pygfile(font)
     self.terminal.stdout  = self.stdout
     self.stdout.prompt = os.getcwd() + '> '
-    self.terminal
+    #self.terminal
+    self.cmdbuf = []
+    self.cmdbuf_index = 0
   
   def slowtext(self, text):
     self.stdout.prompt_enable = False
@@ -48,9 +50,17 @@ class Game:
         elif event.type == KEYDOWN:
           if event.key == K_RETURN:
             # add input to buffer, send input to terminal, clear input
-            self.stdout.buff += [self.stdout.prompt + self.stdout.value, '\n']
+            self.cmdbuf = [ self.stdout.value ] + self.cmdbuf
+            self.cmdbuf_index = 0
+            self.stdout.buff += [ self.stdout.prompt + self.stdout.value, '\n' ]
             self.terminal.onecmd(self.stdout.value)
             self.stdout.value = ''
+          elif event.key == K_UP:
+            self.cmdbuf_index += 1 if self.cmdbuf_index < len(self.cmdbuf) else 0
+            self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if len(self.cmdbuf) > 0 else ''
+          elif event.key == K_DOWN:
+            self.cmdbuf_index -= 1 if self.cmdbuf_index > 0 else 0
+            self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if self.cmdbuf_index > 0 else ''
         elif event.type == USEREVENT_BLINK_CURSOR:
           self.stdout.cursor = '_' if cursor_state else ' '
           cursor_state = not cursor_state
