@@ -30,16 +30,16 @@ class Game:
     self.stdout.prompt_enable = False
     for c in text:
       self.stdout.write(c)
-      pygame.time.wait(50)
       self.stdout.display(self.screen)
       pygame.display.flip()
+      pygame.time.wait(20 if c != '.' else 500)
     self.stdout.prompt_enable = True
 
   def main(self, argv):
     cursor_state = True
     pygame.time.set_timer(USEREVENT_BLINK_CURSOR, 500)
 
-    self.slowtext('hello player!\n')
+    self.slowtext('hello player... this is a really long text. see you later..... bye now!\n')
 
     while True:
       # watch for events

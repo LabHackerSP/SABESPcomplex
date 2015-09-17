@@ -25,8 +25,15 @@ class Cli(Cmd):
     self.parent.slowtext(line + '\n')
   
   def do_cd(self,line):
+    inp = line.split(' ')
+    if os.path.isfile(line + '/.pass'):
+      with open(line + '/.pass', 'r') as f:
+        password = f.read()
+      if len(inp) < 2 or inp[1] != password:
+        print('Senha incorreta!')
+        return
     try:
-      os.chdir(line)
+      os.chdir(inp[0])
     except:
       print('cd: O diretório \"%s\" não existe.' % line)
     else:
