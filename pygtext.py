@@ -6,7 +6,7 @@ import pygame, string
 #pygfile for pygame printing
 #source: https://www.cs.unc.edu/~gb/blog/2007/11/16/python-file-like-object-for-use-with-print-in-pygame/
 class Pygfile(object):
-  def __init__(self, font=None, cursor='_', maxlength=-1, prompt_enable=True, parent=None):
+  def __init__(self, font=None, maxlength=-1, prompt_enable=True, parent=None):
     if font is None:
       font = pygame.font.SysFont('monospace', 10)
     self.font = font

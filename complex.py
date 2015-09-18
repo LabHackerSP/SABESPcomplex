@@ -17,10 +17,9 @@ class Game:
     self.screen = pygame.display.set_mode((800, 600))
     font = pygame.font.SysFont('monospace', 12)
     pygame.key.set_repeat(200,50)
-    self.terminal = cli.Cli(self)
-
     sys.stdout = self.stdout = pygtext.Pygfile(font, parent=self)
-    self.terminal.stdout = self.stdout
+    
+    self.terminal = cli.Cli(self)
     self.stdout.prompt = os.getcwd() + '> '
     self.cursor_state = True
   

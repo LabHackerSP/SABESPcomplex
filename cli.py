@@ -18,9 +18,22 @@ class Cli(object):
     self.ctrl = False
     #self.maxlength = maxlength
     print('TEST!')
+    self.parent.slowtext('teeeeeeest\n')
+    self.parser = Parser(self)
   
   def makeprompt(self, cursor):
-    return self.prompt + self.value + '_' if cursor else ' '
+    return self.prompt + self.value + ('_' if cursor else ' ')
+  
+  def parse(self, inp):
+    spl = inp.split(' ')
+    command = spl[0]
+    args = spl[1:]
+    try:
+      function = getattr(self.parser, command)
+    except:
+      print('Comando não reconhecido')
+    else:
+      function(args)
   
   def updateinput(self, events):
     '''Update the input based on passed events'''
@@ -35,13 +48,14 @@ class Cli(object):
           self.cmdbuf_index = 0
           print(self.makeprompt(False))
           #self.terminal.onecmd(self.stdout.value)
-          self.stdout.value = ''
+          self.parse(self.value)
+          self.value = ''
         elif event.key == K_UP:
           self.cmdbuf_index += 1 if self.cmdbuf_index < len(self.cmdbuf) else 0
-          self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if len(self.cmdbuf) > 0 else ''
+          self.value = self.cmdbuf[self.cmdbuf_index - 1] if len(self.cmdbuf) > 0 else ''
         elif event.key == K_DOWN:
           self.cmdbuf_index -= 1 if self.cmdbuf_index > 0 else 0
-          self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if self.cmdbuf_index > 0 else ''
+          self.value = self.cmdbuf[self.cmdbuf_index - 1] if self.cmdbuf_index > 0 else ''
         elif event.key == K_BACKSPACE: self.value = self.value[:-1]
         elif event.key == K_LSHIFT or event.key == K_RSHIFT: self.shift = True
         elif event.key == K_LCTRL or event.key == K_RCTRL: self.ctrl = True
@@ -53,6 +67,30 @@ class Cli(object):
         elif self.shift:
           if event.key in range(32,126): self.value += shifted(chr(event.key), self.table)
     #if len(self.value) > self.maxlength and self.maxlength >= 0: self.value = self.value[:-1]
+    
+class Parser(object):
+  def __init__(self, parent=None):
+    self.parent = parent
+    
+  def exit(self):
+    pygame.event.post(pygame.event.Event(pygame.QUIT))
+    
+  def slowtext(self,args):
+    self.parent.parent.slowtext(' '.join(args) + '\n')
+  
+  def cd(self,args):
+    if os.path.isfile(args[0] + '/.pass'):
+      with open(args[0] + '/.pass', 'r') as f:
+        password = f.read()
+      if len(inp) < 2 or args[1] != password:
+        print('Senha incorreta!')
+        return
+    try:
+      os.chdir(args[0])
+    except:
+      print('cd: O diretório \"%s\" não existe.' % args[0])
+    else:
+      self.prompt = os.getcwd() + '> '
 
 class OldCli(Cmd):
   undoc_header = None
