@@ -14,17 +14,15 @@ class Game:
   def __init__(self):
     pygame.init()
     pygame.display.init()
-    self.screen = pygame.display.set_mode((800, 600), pygame.RESIZABLE)
+    self.screen = pygame.display.set_mode((800, 600))
     font = pygame.font.SysFont('monospace', 12)
     pygame.key.set_repeat(200,50)
     self.terminal = cli.Cli(self)
 
-    sys.stdout = self.stdout = pygtext.Pygfile(font)
-    self.terminal.stdout  = self.stdout
+    sys.stdout = self.stdout = pygtext.Pygfile(font, parent=self)
+    self.terminal.stdout = self.stdout
     self.stdout.prompt = os.getcwd() + '> '
-    #self.terminal
-    self.cmdbuf = []
-    self.cmdbuf_index = 0
+    self.cursor_state = True
   
   def slowtext(self, text):
     self.stdout.prompt_enable = False
@@ -39,7 +37,7 @@ class Game:
     cursor_state = True
     pygame.time.set_timer(USEREVENT_BLINK_CURSOR, 500)
 
-    self.slowtext('hello player... this is a really long text. see you later..... bye now!\n')
+    #self.slowtext('hello player... this is a really long text. see you later..... bye now!\n')
 
     while True:
       # watch for events
@@ -47,24 +45,10 @@ class Game:
       for event in events:
         if event.type == QUIT:
           return
-        elif event.type == KEYDOWN:
-          if event.key == K_RETURN:
-            # add input to buffer, send input to terminal, clear input
-            self.cmdbuf = [ self.stdout.value ] + self.cmdbuf
-            self.cmdbuf_index = 0
-            self.stdout.buff += [ self.stdout.prompt + self.stdout.value, '\n' ]
-            self.terminal.onecmd(self.stdout.value)
-            self.stdout.value = ''
-          elif event.key == K_UP:
-            self.cmdbuf_index += 1 if self.cmdbuf_index < len(self.cmdbuf) else 0
-            self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if len(self.cmdbuf) > 0 else ''
-          elif event.key == K_DOWN:
-            self.cmdbuf_index -= 1 if self.cmdbuf_index > 0 else 0
-            self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if self.cmdbuf_index > 0 else ''
         elif event.type == USEREVENT_BLINK_CURSOR:
-          self.stdout.cursor = '_' if cursor_state else ' '
-          cursor_state = not cursor_state
-      self.stdout.updateinput(events)
+          self.terminal.cursor = '_' if self.cursor_state else ' '
+          self.cursor_state = not self.cursor_state
+      self.terminal.updateinput(events)
       # clear the image to black
       self.screen.fill((0,0,0))
       # show it on the screen

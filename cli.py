@@ -1,10 +1,60 @@
 # -*- coding: utf-8 -*-
 
+from pygame.locals import *
 from cmd import Cmd
-import argparse, subprocess, os
+import argparse, sys, os
 import pygame
 
-class Cli(Cmd):
+class Cli(object):
+  def __init__(self, parent=None):
+    self.parent = parent
+    sys.stdout = parent.stdout
+    self.cmdbuf = []
+    self.cmdbux_index = 0
+    self.value = ''
+    self.prompt = '> '
+    self.value = ''
+    self.shift = False
+    self.ctrl = False
+    #self.maxlength = maxlength
+    print('TEST!')
+  
+  def makeprompt(self, cursor):
+    return self.prompt + self.value + '_' if cursor else ' '
+  
+  def updateinput(self, events):
+    '''Update the input based on passed events'''
+    for event in events:
+      if event.type == KEYUP:
+        if event.key == K_LSHIFT or event.key == K_RSHIFT: self.shift = False
+        if event.key == K_LCTRL or event.key == K_RCTRL: self.ctrl = False
+      if event.type == KEYDOWN:
+        if event.key == K_RETURN:
+          # add input to buffer, send input to terminal, clear input
+          self.cmdbuf = [ self.value ] + self.cmdbuf
+          self.cmdbuf_index = 0
+          print(self.makeprompt(False))
+          #self.terminal.onecmd(self.stdout.value)
+          self.stdout.value = ''
+        elif event.key == K_UP:
+          self.cmdbuf_index += 1 if self.cmdbuf_index < len(self.cmdbuf) else 0
+          self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if len(self.cmdbuf) > 0 else ''
+        elif event.key == K_DOWN:
+          self.cmdbuf_index -= 1 if self.cmdbuf_index > 0 else 0
+          self.stdout.value = self.cmdbuf[self.cmdbuf_index - 1] if self.cmdbuf_index > 0 else ''
+        elif event.key == K_BACKSPACE: self.value = self.value[:-1]
+        elif event.key == K_LSHIFT or event.key == K_RSHIFT: self.shift = True
+        elif event.key == K_LCTRL or event.key == K_RCTRL: self.ctrl = True
+        if self.ctrl:
+          # ctrl-c clears input line
+          if event.key == K_c: self.value = ''
+        elif not self.shift:
+          if event.key in range(32,126): self.value += chr(event.key)
+        elif self.shift:
+          if event.key in range(32,126): self.value += shifted(chr(event.key), self.table)
+    #if len(self.value) > self.maxlength and self.maxlength >= 0: self.value = self.value[:-1]
+
+class OldCli(Cmd):
   undoc_header = None
   doc_header = 'Comandos disponíveis'
   
@@ -45,9 +95,3 @@ class Cli(Cmd):
   def print_topics(self, header, cmds, cmdlen, maxcol):
     if header is not None:
       Cmd.print_topics(self, header, cmds, cmdlen, maxcol)
-
-'''
-if __name__ == '__main__':
-  print "blorp"
-  Cli().cmdloop()
-'''
