@@ -2,7 +2,7 @@
 
 from pygame.locals import *
 from cmd import Cmd
-import argparse, sys, os
+import argparse, sys, os, subprocess
 import pygame
 
 class Cli(object):
@@ -11,27 +11,27 @@ class Cli(object):
     sys.stdout = parent.stdout
     self.cmdbuf = []
     self.cmdbux_index = 0
-    self.value = ''
-    self.prompt = os.getcwd() + '> '
+    self.prompt = '> '
     self.value = ''
     self.shift = False
     self.ctrl = False
-    #self.maxlength = maxlength
-    print('TEST!')
-    self.parent.slowtext('teeeeeeest\n')
     self.parser = Parser(self)
   
   def makeprompt(self, cursor):
-    return self.prompt + self.value + ('_' if cursor else ' ')
+    return os.getcwd() + self.prompt + self.value + ('_' if cursor else ' ')
   
   def parse(self, inp):
     spl = inp.split(' ')
     command = spl[0]
     args = spl[1:]
+    if command == '': command = 'emptyline'
+    else: command = 'do_' + command
     try:
       function = getattr(self.parser, command)
     except:
-      print('Comando não reconhecido')
+      #print('Comando não reconhecido')
+      function = getattr(self.parser, 'shell')
+      function(inp)
     else:
       function(args)
   
@@ -72,28 +72,38 @@ class Parser(object):
   def __init__(self, parent=None):
     self.parent = parent
   
-  def exit(self, rgs):
+  def do_exit(self, args):
     pygame.event.post(pygame.event.Event(pygame.QUIT))
   
   #slowtext
   #isso é mais pra debug, tirar no jogo final
-  def slowtext(self, args):
+  def do_slowtext(self, args):
     self.parent.parent.slowtext(' '.join(args) + '\n')
   
   #change directory
   #checa por .pass dentro do diretório para 'senha'
-  def cd(self, args):
+  def do_cd(self, args):
+    if len(args) < 1:
+      #implementar cd sem argumento
+      return
     if os.path.isfile(args[0] + '/.pass'):
       with open(args[0] + '/.pass', 'r') as f:
         password = f.read().split('\n')[0]
       if len(args) < 2 or args[1] != password:
-        print( args[1])
-        print(password)
         print('Senha incorreta!')
         return
     try:
       os.chdir(args[0])
     except:
       print('cd: O diretório \"%s\" não existe.' % args[0])
+  
+  def emptyline(self, args):
+    pass
+    
+  def shell(self, line):
+    try:
+      output = subprocess.check_output(line, shell=True, timeout=2, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as exc:
+      print(exc.output.decode('UTF-8'))
     else:
-      self.prompt = os.getcwd() + '> '
+      print(output.decode('UTF-8'))

@@ -15,7 +15,7 @@ class Game:
     pygame.init()
     pygame.display.init()
     self.screen = pygame.display.set_mode((800, 600))
-    font = pygame.font.SysFont('monospace', 12)
+    font = pygame.font.SysFont('monospace', 18)
     pygame.key.set_repeat(200,50)
     sys.stdout = self.stdout = pygtext.Pygfile(font, parent=self)
     
@@ -35,8 +35,6 @@ class Game:
   def main(self, argv):
     cursor_state = True
     pygame.time.set_timer(USEREVENT_BLINK_CURSOR, 500)
-
-    #self.slowtext('hello player... this is a really long text. see you later..... bye now!\n')
 
     while True:
       # watch for events
