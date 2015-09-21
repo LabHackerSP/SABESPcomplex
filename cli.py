@@ -12,7 +12,7 @@ class Cli(object):
     self.cmdbuf = []
     self.cmdbux_index = 0
     self.value = ''
-    self.prompt = '> '
+    self.prompt = os.getcwd() + '> '
     self.value = ''
     self.shift = False
     self.ctrl = False
@@ -71,18 +71,24 @@ class Cli(object):
 class Parser(object):
   def __init__(self, parent=None):
     self.parent = parent
-    
-  def exit(self):
+  
+  def exit(self, rgs):
     pygame.event.post(pygame.event.Event(pygame.QUIT))
-    
-  def slowtext(self,args):
+  
+  #slowtext
+  #isso é mais pra debug, tirar no jogo final
+  def slowtext(self, args):
     self.parent.parent.slowtext(' '.join(args) + '\n')
   
-  def cd(self,args):
+  #change directory
+  #checa por .pass dentro do diretório para 'senha'
+  def cd(self, args):
     if os.path.isfile(args[0] + '/.pass'):
       with open(args[0] + '/.pass', 'r') as f:
-        password = f.read()
-      if len(inp) < 2 or args[1] != password:
+        password = f.read().split('\n')[0]
+      if len(args) < 2 or args[1] != password:
+        print( args[1])
+        print(password)
         print('Senha incorreta!')
         return
     try:
