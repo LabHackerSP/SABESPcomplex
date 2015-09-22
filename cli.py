@@ -10,15 +10,28 @@ class Cli(object):
     self.parent = parent
     sys.stdout = parent.stdout
     self.cmdbuf = []
-    self.cmdbux_index = 0
+    self.cmdbuf_index = 0
     self.prompt = '> '
     self.value = ''
     self.shift = False
     self.ctrl = False
     self.parser = Parser(self)
+    
+    inkey   = '123457890-=/;\'[]\\'
+    shifted = '!@#$%&*()_+?:\"{}|'
+    try:
+      self.table = str.maketrans(inkey,shifted)
+    except:
+      self.table = string.maketrans(inkey,shifted)
   
   def makeprompt(self, cursor):
-    return os.getcwd() + self.prompt + self.value + ('_' if cursor else ' ')
+    return self.makepath() + self.prompt + self.value + ('_' if cursor else ' ')
+    
+  def makepath(self, path='', absolute=False):
+    return os.path.normpath(os.path.join(os.getcwd() if absolute else '', self.parent.curdir, path))
+    
+  def chpath(self, path):
+    self.parent.curdir = os.path.normpath(os.path.join(self.parent.curdir, path))
   
   def parse(self, inp):
     spl = inp.split(' ')
@@ -65,7 +78,7 @@ class Cli(object):
         elif not self.shift:
           if event.key in range(32,126): self.value += chr(event.key)
         elif self.shift:
-          if event.key in range(32,126): self.value += shifted(chr(event.key), self.table)
+          if event.key in range(32,126): self.value += chr(event.key).translate(self.table).upper()
     #if len(self.value) > self.maxlength and self.maxlength >= 0: self.value = self.value[:-1]
     
 class Parser(object):
@@ -86,15 +99,17 @@ class Parser(object):
     if len(args) < 1:
       #implementar cd sem argumento
       return
-    if os.path.isfile(args[0] + '/.pass'):
-      with open(args[0] + '/.pass', 'r') as f:
+    cdpath = self.parent.makepath(args[0])
+    passfile = os.path.join(cdpath, '.pass')
+    if os.path.isfile(passfile):
+      with open(passfile, 'r') as f:
         password = f.read().split('\n')[0]
       if len(args) < 2 or args[1] != password:
         print('Senha incorreta!')
         return
-    try:
-      os.chdir(args[0])
-    except:
+    if os.path.isdir(cdpath) and os.path.dirname(os.path.relpath(cdpath,os.getcwd()))[0:2] != '..':
+      self.parent.chpath(args[0])
+    else:
       print('cd: O diretório \"%s\" não existe.' % args[0])
   
   def emptyline(self, args):
@@ -102,7 +117,7 @@ class Parser(object):
     
   def shell(self, line):
     try:
-      output = subprocess.check_output(line, shell=True, timeout=2, stderr=subprocess.STDOUT)
+      output = subprocess.check_output(line, shell=True, timeout=2, stderr=subprocess.STDOUT, cwd=self.parent.makepath(absolute=True))
     except subprocess.CalledProcessError as exc:
       print(exc.output.decode('UTF-8'))
     else:

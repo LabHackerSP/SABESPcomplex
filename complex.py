@@ -20,8 +20,11 @@ class Game:
     sys.stdout = self.stdout = pygtext.Pygfile(font, parent=self)
     
     self.terminal = cli.Cli(self)
-    self.stdout.prompt = os.getcwd() + '> '
     self.cursor_state = True
+    
+    self.basedir = 'sabesp'
+    self.curdir = ''
+    os.chdir(self.basedir)
   
   def slowtext(self, text):
     self.stdout.prompt_enable = False
